@@ -1,4 +1,4 @@
-﻿namespace Echo
+﻿namespace Echo.Interface
 {
       /// <summary>
       /// This interface is used to mark classes as events in the Echo event system.
