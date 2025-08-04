@@ -55,6 +55,11 @@ namespace Echo.Core
                   Events<T>.OnEvent += action;
             }
 
+            public static void Subscribe<T>(Action<T> action, Func<T, bool> filter) where T : struct, IEvent
+            {
+                  Events<T>.SubscribeFiltered(action, filter);
+            }
+
             /// <summary>
             /// Subscribes to an event of the specified type using the provided action and returns a scoped subscription.
             /// The returned subscription ensures that the subscription is automatically disposed of when no longer in scope.
@@ -78,6 +83,12 @@ namespace Echo.Core
             public static void Unsubscribe<T>(Action<T> action) where T : struct, IEvent
             {
                   Events<T>.OnEvent -= action;
+                  Events<T>.UnsubscribeFiltered(action);
+            }
+
+            public static void UnsubscribeAll<T>() where T : struct, IEvent
+            {
+                  Events<T>.Clear();
             }
       }
 }
