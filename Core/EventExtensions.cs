@@ -35,6 +35,19 @@ namespace Echo.Core
             }
 
             /// <summary>
+            /// Schedules the specified event to be published to the event bus on the next frame.
+            /// </summary>
+            /// <typeparam name="T">The type of the event being scheduled, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
+            /// <param name="eventData">The event data to be scheduled for publishing.</param>
+            /// <returns>An enumerator that waits for the next frame before publishing the event.</returns>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static System.Collections.IEnumerator FireNextFrame<T>(this T eventData) where T : struct, IEvent
+            {
+                  yield return null;
+                  EventBus.Publish(eventData);
+            }
+
+            /// <summary>
             /// Transforms the specified event data and publishes the transformed event to the event bus.
             /// </summary>
             /// <typeparam name="T">The type of the source event, which must implement <see cref="IEvent"/> and be a value type.</typeparam>

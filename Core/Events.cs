@@ -17,16 +17,9 @@ namespace Echo.Core
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static void InvokeBatch(ReadOnlySpan<T> events)
             {
-                  Action<T> handler = OnEvent;
-
-                  if (handler == null)
-                  {
-                        return;
-                  }
-
                   for (int i = 0; i < events.Length; i++)
                   {
-                        handler(events[i]);
+                        OnEvent?.Invoke(events[i]);
                   }
             }
 
