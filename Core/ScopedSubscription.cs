@@ -32,7 +32,7 @@ namespace Echo.Core
 
             public override int GetHashCode()
             {
-                  return (_action != null ? _action.GetHashCode() : 0);
+                  return _action?.GetHashCode() ?? 0;
             }
       }
 }

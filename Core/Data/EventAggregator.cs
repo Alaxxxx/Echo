@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using Echo.Interface;
 
-namespace Echo.Core
+namespace Echo.Core.Data
 {
       /// <summary>
       /// A static, generic class for aggregating and managing events of type <typeparamref name="T"/>.

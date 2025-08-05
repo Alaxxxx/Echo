@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Echo.Core.Data;
 using Echo.Interface;
 using UnityEngine;
 
-namespace Echo.Core
+namespace Echo.Core.Extensions
 {
       public static class EventExtensions
       {
