@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using Echo.Interface;
+using OpalStudio.Echo.Interface;
 
-namespace Echo.Core.Data
+namespace OpalStudio.Echo.Core.Data
 {
       internal readonly struct FilteredHandler<T> where T : struct, IEvent
       {

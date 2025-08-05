@@ -1,10 +1,10 @@
 using System;
 using System.Runtime.CompilerServices;
-using Echo.Core.Data;
-using Echo.Interface;
+using OpalStudio.Echo.Core.Data;
+using OpalStudio.Echo.Interface;
 using Unity.Burst.CompilerServices;
 
-namespace Echo.Core
+namespace OpalStudio.Echo.Core
 {
       /// <summary>
       /// A static class that facilitates the publish-subscribe pattern for event handling.

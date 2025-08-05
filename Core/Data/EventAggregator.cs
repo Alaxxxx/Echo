@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using Echo.Interface;
+using OpalStudio.Echo.Interface;
 
-namespace Echo.Core.Data
+namespace OpalStudio.Echo.Core.Data
 {
       /// <summary>
       /// A static, generic class for aggregating and managing events of type <typeparamref name="T"/>.

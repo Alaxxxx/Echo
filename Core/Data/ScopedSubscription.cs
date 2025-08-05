@@ -1,7 +1,7 @@
 ﻿using System;
-using Echo.Interface;
+using OpalStudio.Echo.Interface;
 
-namespace Echo.Core
+namespace OpalStudio.Echo.Core.Data
 {
       public readonly struct ScopedSubscription<T> : IEquatable<ScopedSubscription<T>>, IDisposable where T : struct, IEvent
       {

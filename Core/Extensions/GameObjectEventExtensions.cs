@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using Echo.Interface;
+using OpalStudio.Echo.Interface;
 using UnityEngine;
 
-namespace Echo.Core.Extensions
+namespace OpalStudio.Echo.Core.Extensions
 {
       public static class GameObjectEventExtensions
       {

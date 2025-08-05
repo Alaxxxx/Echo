@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Echo.Core.Data;
-using Echo.Interface;
+using OpalStudio.Echo.Core.Data;
+using OpalStudio.Echo.Interface;
 using UnityEngine;
 
-namespace Echo.Core.Extensions
+namespace OpalStudio.Echo.Core.Extensions
 {
       public static class EventExtensions
       {
