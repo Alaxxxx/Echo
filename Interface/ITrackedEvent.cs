@@ -1,4 +1,4 @@
-﻿namespace Echo.Interface
+﻿namespace OpalStudio.Echo.Interface
 {
       /// <summary>
       /// Represents an interface for events that are tracked with specific source and target identifiers

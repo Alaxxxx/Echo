@@ -1,4 +1,4 @@
-﻿namespace Echo.Interface
+﻿namespace OpalStudio.Echo.Interface
 {
       /// <summary>
       /// Represents the base interface for all event types in the Echo system.
