@@ -15,7 +15,7 @@ With a fluent filtering API, automatic subscription management, and seamless int
 - **🎯 Advanced Filtering API**: A fluent, chainable interface (`Where(...).And(...).Or(...)`) to subscribe to events that meet complex conditions.
 - **♻️ Automatic Subscription Management**: Scoped subscriptions (`IDisposable`) handle cleanup automatically, preventing common memory leaks.
 - **📦 Event Batching & Aggregation**: Collect high-frequency events and publish them in batches to optimize performance.
-- **🎮 Deep Unity Integration**: Helper extensions for GameObjects allow for easy source/target event tracking.
+- **🎮 Unity Integration**: Helper extensions for GameObjects allow for easy source/target event tracking.
 
 ## 🚀 Installation
 
@@ -61,7 +61,9 @@ Using Echo involves three simple steps: defining, publishing, and listening to e
 
 ### Understanding the Event System
 
-Echo Event Bus is built around **struct-based events** that implement specific interfaces. This design choice ensures zero-allocation publishing and maximum performance.
+Echo's event bus is built around **`struct`**-based events to ensure **zero-allocation** publishing and maximum performance. 
+> [!NOTE]
+> It is essential to understand that the system is **synchronous by default**: an event is published and fully handled within the same frame, providing predictable code flow. For asynchronous needs, such as delays, specific extension methods are available.
 
 #### Event Types
 
@@ -189,7 +191,15 @@ void OnGameStarted(GameStartedEvent evt)
 
 ## ♻️ Automatic Cleanup with Scoped Subscriptions
 
-Forgetting to unsubscribe is a common source of bugs. Echo provides a safer, IDisposable-based pattern for subscriptions that handles cleanup automatically.
+Forgetting to unsubscribe from an event in `OnDisable` is one of the most common sources of memory leaks and bugs in Unity. To make this process more robust, Echo offers a safer pattern based on the `IDisposable` interface.
+
+The key insight is that this makes unsubscribing simpler and harder to get wrong. Instead of needing to manually call `Unsubscribe` with the exact same method reference, you just hold onto the subscription object and call its `Dispose()` method.
+
+### 1. Use Case 1: Subscriptions Tied to a MonoBehaviour's Lifecycle
+
+This is the most frequent scenario: a component needs to listen for an event as long as it's active (`OnEnable`) and must stop listening when it's disabled `OnDisable`).
+
+The advantage here is that you no longer need to worry about which handler method you passed to `Subscribe`. Just call `.Dispose()` on the subscription object, and it cleans itself up.
 
 ```csharp
 using Echo.Core;
@@ -198,31 +208,83 @@ using UnityEngine;
 
 public class UINotificationManager : MonoBehaviour
 {
-    // Store the subscription object
+    // Store the subscription object, which is "Disposable"
     private IDisposable _gameOverSubscription;
 
     void OnEnable()
     {
-        // Subscribe and store the disposable object
+        // Subscribe to the event and keep the returned IDisposable object.
         _gameOverSubscription = EventBus.SubscribeScoped<GameOverEvent>(ShowGameOverScreen);
     }
 
     void OnDisable()
     {
-        // Dispose the subscription to unsubscribe automatically
+        // This is where the magic happens. By calling Dispose(),
+        // the object handles its own unsubscription from the EventBus.
+        // No more risk of typos or forgetting the handler!
         _gameOverSubscription?.Dispose();
     }
 
     private void ShowGameOverScreen(GameOverEvent evt)
     {
-        // ... show UI ...
+        // ... logic to show the Game Over screen ...
     }
 }
+```
+
+### 2. Use Case 2: Temporary Subscriptions with `using` (Truly Automatic Cleanup)
+
+There are times when you only need to listen for an event within a specific scope, like a single method or a coroutine. This is where the `IDisposable` pattern becomes incredibly powerful with C#'s `using` statement, which provides fully guaranteed and automatic cleanup.
+
+As soon as the code execution leaves the **using** block—whether normally, through a `return`, or via an exception—the `Dispose()` method is called automatically.
+
+Imagine a tutorial that waits for the player to perform a "jump" action, but only for a few seconds.
+
+```csharp
+using Echo.Core;
+using System;
+using UnityEngine;
+
+public class TutorialManager : MonoBehaviour
+{
+    // A coroutine that waits for a specific action
+    public void PromptForJump()
+    {
+        StartCoroutine(WaitForJumpAction());
+    }
+
+    private System.Collections.IEnumerator WaitForJumpAction()
+    {
+        Debug.Log("Tutorial: Please jump now!");
+
+        // We subscribe to 'PlayerJumpedEvent' only within this 'using' block.
+        using var jumpSubscription = EventBus.SubscribeScoped<PlayerJumpedEvent>(OnPlayerJumped);
+
+        // Wait for 5 seconds. The subscription is active during this time.
+        yield return new WaitForSeconds(5f);
+
+        // At the end of this yield, the method continues and the 'using' block ends.
+        // 'jumpSubscription.Dispose()' is now called automatically,
+        // which cleans up the subscription. If the player hasn't jumped in 5 seconds,
+        // we stop listening.
+    }
+
+    private void OnPlayerJumped(PlayerJumpedEvent evt)
+    {
+        Debug.Log("Great! You jumped. Tutorial step complete.");
+        // We can now stop the coroutine since the goal was achieved.
+        StopCoroutine(nameof(WaitForJumpAction));
+    }
+}
+
+// A simple event marker for this action
+public struct PlayerJumpedEvent : IEvent { }
 ```
 
 ## 🎯 Tracked Events: Source & Target
 
 For events where you need to know "who did what to whom" (e.g., combat, interactions), use `ITrackedEvent`. This interface adds `SourceId` and `TargetId` properties to your event.
+It extends `IEvent` by adding two properties: `SourceId` and `TargetId`.
 
 ### 1. Define a Tracked Event
 ```csharp
@@ -236,7 +298,6 @@ public struct DamageDealtEvent : ITrackedEvent
 
     // Custom data
     public float DamageAmount;
-    public DamageType Type;
 }
 ```
 
@@ -289,6 +350,27 @@ public class PlayerHealth : MonoBehaviour
 }
 ```
 
+### How IDs Work: `GameObject.GetInstanceID()`
+
+By default, Echo's helper extensions use Unity's built-in `GameObject.GetInstanceID()` method to populate the `SourceId` and `TargetId`.
+
+`GetInstanceID()` returns a **unique integer** for every object that inherits from `UnityEngine.Object` (like GameObjects, Components, and Materials). This ID is guaranteed to be unique for the entire session your application is running, making it a fast and convenient way to reference specific object instances without passing direct object references.
+
+> [!WARNING]
+> A common source of errors is confusing the ID of a `GameObject` with the ID of one of its `Component`s. When your script inherits from `MonoBehaviour`, `this.GetInstanceID()` returns the unique ID of the **script component instance**, while `this.gameObject.GetInstanceID()` returns the unique ID of the **GameObject** it is attached to. These two IDs will **not** be the same. Be sure to use the correct one for your logic (Echo's helpers typically expect the GameObject's ID).
+
+### Managing Complexity: A Note on ID Management
+
+While using `GetInstanceID()` is efficient, it has a limitation: the ID is an arbitrary integer. A log stating that "Entity 1738 dealt damage to Entity 9254" is not very descriptive for debugging.
+
+For more complex projects, you will likely want to implement your own system to map these instance IDs to more meaningful entities. Echo intentionally leaves this implementation to you, as every project's needs are different.
+
+A common pattern is to create a central `EntityManager` or `Registry`:
+
+1.  When an important entity (like a player, enemy, or interactive object) is created (`Awake` or `OnEnable`), it registers itself with the manager.
+2.  The manager stores it in a `Dictionary<int, IGameEntity>`, using its `GetInstanceID()` as the key.
+3.  When you receive a tracked event, you can pass the `SourceId` or `TargetId` to your manager to retrieve the actual `GameObject` or a custom entity class.
+
 ## 🔥 Advanced Subscriptions: Fluent Filtering
 
 Create highly specific subscriptions with the fluent `Where<T>()` API. Chain conditions with `And()` and `Or()` to build complex logic without cluttering your handler methods.
@@ -300,41 +382,46 @@ using UnityEngine;
 
 public class SpecialEffectsManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _localPlayer;
+    [SerializeField] private GameObject _player;
 
     void Start()
     {
-        // Example 1: Play a sound for magic damage events with more than 50 damage
-        EventBus.Where<DamageDealtEvent>()
-            .WithValue(evt => evt.Type, DamageType.Magic) // Extension method
-            .And(evt => evt.DamageAmount > 50)           // Custom lambda
-            .Subscribe(PlayBigMagicHitSound);
+        // Example 1: A complex chain combining AND/OR logic.
+        // Listen for events where (the value is 100 AND the flag is true) OR (the value is over 200).
+        EventBus.Where<GenericEventA>()
+            .And(evt => evt.SomeValue == 100 && evt.SomeFlag == true)
+            .Or(evt => evt.SomeValue > 200)
+            .Subscribe(HandleComplexCondition);
 
-        // Example 2: Show critical hit indicator if this player lands a critical hit
-        EventBus.Where<CriticalHitEvent>()
-            .FromSource(_localPlayer) // Filter by source GameObject
-            .Subscribe(ShowCriticalHitIndicator);
-            
-        // Example 3: Subscribe with automatic cleanup
-        using var sub = EventBus.Where<SpecialEvent>()
-            .WithRange(evt => evt.Value, 100, 200)
-            .SubscribeScoped(HandleSpecialEvent);
+        // Example 2: Filtering by source/target and specific values.
+        // Listen for events sent FROM the player TO the enemy, where a specific tag matches.
+        EventBus.Where<GenericTrackedEventB>()
+            .FromSource(_player)
+            .ToTarget(_enemy)
+            .WithValue(evt => evt.Tag, "Interaction")
+            .Subscribe(HandlePlayerToEnemyInteraction);
+
+        // Example 3: Using a range and multiple source/target checks.
+        // Listen for events where the source is the player OR another object,
+        // the target is NOT the player, and a float value is within a specific range.
+        EventBus.Where<GenericTrackedEventB>()
+            .And(evt => evt.SourceId == _player.GetInstanceID() || evt.SourceId == _someOtherObject.GetInstanceID())
+            .And(evt => evt.TargetId != _player.GetInstanceID())
+            .WithRange(evt => evt.Amount, 10.5f, 50.0f)
+            .Subscribe(HandleRangedEventFromMultipleSources);
+
+        // Example 4: A temporary subscription with the 'using' block for automatic cleanup.
+        // This listener is active only for the duration of this method. It filters events
+        // that are between two specific objects or have a specific ID.
+        using var tempSubscription = EventBus.Where<GenericTrackedEventB>()
+            .Between(_player, _someOtherObject) // Helper for Source AND Target
+            .Or(evt => evt.TargetId == _entityId)
+            .SubscribeScoped(HandleTemporaryEvent);
+        
+        Debug.Log("Listeners configured. The temporary listener will now be disposed.");
     }
-    
-    void PlayBigMagicHitSound(DamageDealtEvent evt)
-    {
-        // Play appropriate sound effect
-    }
-    
-    void ShowCriticalHitIndicator(CriticalHitEvent evt)
-    {
-        // Show UI feedback
-    }
-    
-    void HandleSpecialEvent(SpecialEvent evt)
-    {
-        // Handle the special event
-    }
+
+    ...
 }
 ```
 
