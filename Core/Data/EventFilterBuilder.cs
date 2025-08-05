@@ -8,7 +8,7 @@ namespace OpalStudio.Echo.Core.Data
       {
             private readonly Func<T, bool> _filter;
 
-            internal EventFilterBuilder(Func<T, bool> filter = null)
+            private EventFilterBuilder(Func<T, bool> filter = null)
             {
                   _filter = filter;
             }
@@ -21,7 +21,7 @@ namespace OpalStudio.Echo.Core.Data
                         return new EventFilterBuilder<T>(condition);
                   }
 
-                  var currentFilter = _filter;
+                  Func<T, bool> currentFilter = _filter;
 
                   return new EventFilterBuilder<T>(evt => currentFilter(evt) && condition(evt));
             }
@@ -34,7 +34,7 @@ namespace OpalStudio.Echo.Core.Data
                         return new EventFilterBuilder<T>(condition);
                   }
 
-                  var currentFilter = _filter;
+                  Func<T, bool> currentFilter = _filter;
 
                   return new EventFilterBuilder<T>(evt => currentFilter(evt) || condition(evt));
             }
