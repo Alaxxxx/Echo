@@ -53,15 +53,13 @@ namespace Echo.Core.Data
                   }
             }
 
-            // Pour les lambdas (retourne un disposable)
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public FilteredSubscription<T> SubscribeScoped(Action<T> handler)
+            public IDisposable SubscribeScoped(Action<T> handler) // Retourne une interface commune
             {
                   if (_filter == null)
                   {
-                        EventBus.Subscribe(handler);
-
-                        return new FilteredSubscription<T>(-1); // ID spécial pour les non-filtrés
+                        // Utilise le mécanisme de ScopedSubscription qui sait gérer les non-filtrés
+                        return EventBus.SubscribeScoped(handler);
                   }
                   else
                   {
