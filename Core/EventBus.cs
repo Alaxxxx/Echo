@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using Echo.Core.Data;
 using Echo.Interface;
 using Unity.Burst.CompilerServices;
 
@@ -77,6 +78,39 @@ namespace Echo.Core
                   return new ScopedSubscription<T>(action);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static void SubscribeFiltered<T>(Action<T> action, Func<T, bool> filter) where T : struct, IEvent
+            {
+                  Events<T>.AddFilteredHandler(action, filter);
+            }
+
+            /// <summary>
+            /// S'abonne à un événement ITrackedEvent pour une source spécifique
+            /// </summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static void SubscribeFromSource<T>(Action<T> action, int sourceId) where T : struct, ITrackedEvent
+            {
+                  Events<T>.AddFilteredHandler(action, evt => evt.SourceId == sourceId);
+            }
+
+            /// <summary>
+            /// S'abonne à un événement ITrackedEvent pour une cible spécifique
+            /// </summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static void SubscribeToTarget<T>(Action<T> action, int targetId) where T : struct, ITrackedEvent
+            {
+                  Events<T>.AddFilteredHandler(action, evt => evt.TargetId == targetId);
+            }
+
+            /// <summary>
+            /// S'abonne à un événement ITrackedEvent pour une paire source/cible spécifique
+            /// </summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static void SubscribeFromTo<T>(Action<T> action, int sourceId, int targetId) where T : struct, ITrackedEvent
+            {
+                  Events<T>.AddFilteredHandler(action, evt => evt.SourceId == sourceId && evt.TargetId == targetId);
+            }
+
 #endregion
 
 #region Unsubscribe
@@ -92,6 +126,12 @@ namespace Echo.Core
                   Events<T>.OnEvent -= action;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static void UnsubscribeFiltered<T>(Action<T> action) where T : struct, IEvent
+            {
+                  Events<T>.RemoveFilteredHandler(action);
+            }
+
             /// <summary>
             /// Unsubscribes all actions and filters from the current event type.
             /// </summary>
@@ -103,5 +143,11 @@ namespace Echo.Core
             }
 
 #endregion
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static EventFilterBuilder<T> Where<T>() where T : struct, IEvent
+            {
+                  return new EventFilterBuilder<T>();
+            }
       }
 }
