@@ -1,7 +1,7 @@
 ﻿using System;
 using Echo.Interface;
 
-namespace Echo.Core
+namespace Echo.Core.Data
 {
       public readonly struct ScopedSubscription<T> : IEquatable<ScopedSubscription<T>>, IDisposable where T : struct, IEvent
       {
