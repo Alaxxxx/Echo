@@ -78,12 +78,31 @@ namespace Echo.Core
                   return new ScopedSubscription<T>(action);
             }
 
+            /// <summary>
+            /// Subscribes to an event of the specified type with a provided filter, allowing only events that
+            /// satisfy the filter condition to trigger the provided action.
+            /// </summary>
+            /// <typeparam name="T">The type of the event to subscribe to. Must be a struct implementing <see cref="IEvent"/>.</typeparam>
+            /// <param name="action">The action to be executed when an event of the specified type is published and passes the filter.</param>
+            /// <param name="filter">A function to determine whether the event should trigger the action.
+            /// Only events for which this function returns true will be processed.</param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void SubscribeFiltered<T>(Action<T> action, Func<T, bool> filter) where T : struct, IEvent
             {
                   Events<T>.AddFilteredHandler(action, filter);
             }
 
+            /// <summary>
+            /// Subscribes to events of the specified type with a filtered handler.
+            /// The handler will only be invoked
+            /// if the specified filter condition evaluates to true.
+            /// Returns a scoped subscription that can manage
+            /// the lifecycle of the subscription.
+            /// </summary>
+            /// <typeparam name="T">The type of the event to subscribe to. Must be a struct implementing <see cref="IEvent"/>.</typeparam>
+            /// <param name="action">The action to be executed when the event is published and the filter condition evaluates to true.</param>
+            /// <param name="filter">A function that evaluates whether the action should be executed for the given event instance.</param>
+            /// <returns>A <see cref="FilteredSubscription{T}"/> instance representing the scoped subscription.</returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static FilteredSubscription<T> SubscribeFilteredScoped<T>(Action<T> action, Func<T, bool> filter) where T : struct, IEvent
             {
@@ -93,8 +112,11 @@ namespace Echo.Core
             }
 
             /// <summary>
-            /// S'abonne à un événement ITrackedEvent pour une source spécifique
+            /// Subscribes to events of the specified type originating from a specific source.
             /// </summary>
+            /// <typeparam name="T">The type of the event to subscribe to. Must be a struct implementing <see cref="ITrackedEvent"/>.</typeparam>
+            /// <param name="action">The action to invoke when an event matching the criteria is received.</param>
+            /// <param name="sourceId">The identifier of the source to filter events by.</param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void SubscribeFromSource<T>(Action<T> action, int sourceId) where T : struct, ITrackedEvent
             {
@@ -102,8 +124,11 @@ namespace Echo.Core
             }
 
             /// <summary>
-            /// S'abonne à un événement ITrackedEvent pour une cible spécifique
+            /// Subscribes to events of the specified type that are directed to a specific target identified by <paramref name="targetId"/>.
             /// </summary>
+            /// <typeparam name="T">The type of the event to subscribe to. Must be a struct implementing <see cref="ITrackedEvent"/>.</typeparam>
+            /// <param name="action">The callback function to invoke when an event is received that matches the specified target.</param>
+            /// <param name="targetId">The unique identifier of the target for which events should be subscribed.</param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void SubscribeToTarget<T>(Action<T> action, int targetId) where T : struct, ITrackedEvent
             {
@@ -111,8 +136,12 @@ namespace Echo.Core
             }
 
             /// <summary>
-            /// S'abonne à un événement ITrackedEvent pour une paire source/cible spécifique
+            /// Subscribes to events of the specified type that match both the source and target identifiers.
             /// </summary>
+            /// <typeparam name="T">The type of the event to subscribe to. Must be a struct implementing <see cref="ITrackedEvent"/>.</typeparam>
+            /// <param name="action">The action to be invoked when an event matching the source and target identifiers is published.</param>
+            /// <param name="sourceId">The identifier of the source from which the events originate.</param>
+            /// <param name="targetId">The identifier of the target to which the events are sent.</param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void SubscribeFromTo<T>(Action<T> action, int sourceId, int targetId) where T : struct, ITrackedEvent
             {
@@ -134,6 +163,11 @@ namespace Echo.Core
                   Events<T>.OnEvent -= action;
             }
 
+            /// <summary>
+            /// Unsubscribes a previously subscribed filtered event action from the event bus.
+            /// </summary>
+            /// <typeparam name="T">The type of the event for which the filtered action was subscribed. Must be a struct implementing <see cref="IEvent"/>.</typeparam>
+            /// <param name="action">The filtered action to be unsubscribed from the event bus.</param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [Obsolete("Unsubscribing a filtered event by reference is unreliable for lambdas. Use the IDisposable pattern returned by SubscribeFilteredScoped.", false)]
             public static void UnsubscribeFiltered<T>(Action<T> action) where T : struct, IEvent
@@ -153,6 +187,12 @@ namespace Echo.Core
 
 #endregion
 
+            /// <summary>
+            /// Creates a filter builder for events of the specified type, allowing advanced filtering
+            /// and subscription configurations.
+            /// </summary>
+            /// <typeparam name="T">The type of event for which the filter is being created. Must be a struct implementing <see cref="IEvent"/>.</typeparam>
+            /// <returns>An <see cref="EventFilterBuilder{T}"/> instance enabling fluent API for applying filters and subscribing to events.</returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static EventFilterBuilder<T> Where<T>() where T : struct, IEvent
             {
