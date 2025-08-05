@@ -39,7 +39,6 @@ namespace Echo.Core.Data
                   return new EventFilterBuilder<T>(evt => currentFilter(evt) || condition(evt));
             }
 
-            // Pour les méthodes nommées (désabonnement classique)
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Subscribe(Action<T> handler)
             {
@@ -54,19 +53,9 @@ namespace Echo.Core.Data
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public IDisposable SubscribeScoped(Action<T> handler) // Retourne une interface commune
+            public FilteredSubscription<T> SubscribeScoped(Action<T> handler)
             {
-                  if (_filter == null)
-                  {
-                        // Utilise le mécanisme de ScopedSubscription qui sait gérer les non-filtrés
-                        return EventBus.SubscribeScoped(handler);
-                  }
-                  else
-                  {
-                        int id = Events<T>.AddFilteredHandler(handler, _filter);
-
-                        return new FilteredSubscription<T>(id);
-                  }
+                  return _filter == null ? EventBus.SubscribeFilteredScoped(handler, static _ => true) : EventBus.SubscribeFilteredScoped(handler, _filter);
             }
       }
 }
