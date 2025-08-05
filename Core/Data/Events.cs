@@ -37,7 +37,6 @@ namespace Echo.Core.Data
                   }
             }
 
-            // Retourne un ID pour pouvoir se désabonner
             internal static int AddFilteredHandler(Action<T> handler, Func<T, bool> filter)
             {
                   EnsureFilteredCapacity();
@@ -47,7 +46,6 @@ namespace Echo.Core.Data
                   return id;
             }
 
-            // Suppression par référence d'action (pour compatibilité avec les méthodes nommées)
             internal static bool RemoveFilteredHandler(Action<T> handler)
             {
                   for (int i = 0; i < _filteredCount; i++)
@@ -63,7 +61,6 @@ namespace Echo.Core.Data
                   return false;
             }
 
-            // Suppression par ID (pour les lambdas)
             internal static bool RemoveFilteredHandler(int id)
             {
                   for (int i = 0; i < _filteredCount; i++)
