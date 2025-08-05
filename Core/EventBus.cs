@@ -135,6 +135,7 @@ namespace Echo.Core
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [Obsolete("Unsubscribing a filtered event by reference is unreliable for lambdas. Use the IDisposable pattern returned by SubscribeFilteredScoped.", false)]
             public static void UnsubscribeFiltered<T>(Action<T> action) where T : struct, IEvent
             {
                   Events<T>.RemoveFilteredHandler(action);
