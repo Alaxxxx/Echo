@@ -4,7 +4,7 @@ using Echo.Interface;
 
 namespace Echo.Core.Data
 {
-      public readonly struct EventFilterBuilder<T> : IEquatable<EventFilterBuilder<T>> where T : struct, IEvent
+      public readonly struct EventFilterBuilder<T> where T : struct, IEvent
       {
             private readonly Func<T, bool> _filter;
 
@@ -21,7 +21,7 @@ namespace Echo.Core.Data
                         return new EventFilterBuilder<T>(condition);
                   }
 
-                  Func<T, bool> currentFilter = _filter;
+                  var currentFilter = _filter;
 
                   return new EventFilterBuilder<T>(evt => currentFilter(evt) && condition(evt));
             }
@@ -34,11 +34,12 @@ namespace Echo.Core.Data
                         return new EventFilterBuilder<T>(condition);
                   }
 
-                  Func<T, bool> currentFilter = _filter;
+                  var currentFilter = _filter;
 
                   return new EventFilterBuilder<T>(evt => currentFilter(evt) || condition(evt));
             }
 
+            // Pour les méthodes nommées (désabonnement classique)
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Subscribe(Action<T> handler)
             {
@@ -52,27 +53,22 @@ namespace Echo.Core.Data
                   }
             }
 
+            // Pour les lambdas (retourne un disposable)
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public ScopedSubscription<T> SubscribeScoped(Action<T> handler)
+            public FilteredSubscription<T> SubscribeScoped(Action<T> handler)
             {
-                  Subscribe(handler);
+                  if (_filter == null)
+                  {
+                        EventBus.Subscribe(handler);
 
-                  return new ScopedSubscription<T>(handler);
-            }
+                        return new FilteredSubscription<T>(-1); // ID spécial pour les non-filtrés
+                  }
+                  else
+                  {
+                        int id = Events<T>.AddFilteredHandler(handler, _filter);
 
-            public bool Equals(EventFilterBuilder<T> other)
-            {
-                  return Equals(_filter, other._filter);
-            }
-
-            public override bool Equals(object obj)
-            {
-                  return obj is EventFilterBuilder<T> other && Equals(other);
-            }
-
-            public override int GetHashCode()
-            {
-                  return (_filter != null ? _filter.GetHashCode() : 0);
+                        return new FilteredSubscription<T>(id);
+                  }
             }
       }
 }

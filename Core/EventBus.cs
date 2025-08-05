@@ -84,6 +84,14 @@ namespace Echo.Core
                   Events<T>.AddFilteredHandler(action, filter);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static FilteredSubscription<T> SubscribeFilteredScoped<T>(Action<T> action, Func<T, bool> filter) where T : struct, IEvent
+            {
+                  int id = Events<T>.AddFilteredHandler(action, filter);
+
+                  return new FilteredSubscription<T>(id);
+            }
+
             /// <summary>
             /// S'abonne à un événement ITrackedEvent pour une source spécifique
             /// </summary>

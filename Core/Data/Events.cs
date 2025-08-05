@@ -8,17 +8,18 @@ namespace Echo.Core.Data
       {
             internal static event Action<T> OnEvent;
 
-            private static FilteredHandler<T>[] filteredHandlers;
-            private static int filteredCount;
+            private static FilteredHandler<T>[] _filteredHandlers;
+            private static int _filteredCount;
+            private static int _nextId = 1;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static void Invoke(T eventData)
             {
                   OnEvent?.Invoke(eventData);
 
-                  for (int i = 0; i < filteredCount; i++)
+                  for (int i = 0; i < _filteredCount; i++)
                   {
-                        ref FilteredHandler<T> handler = ref filteredHandlers[i];
+                        ref var handler = ref _filteredHandlers[i];
 
                         if (handler.ShouldInvoke(eventData))
                         {
@@ -36,39 +37,67 @@ namespace Echo.Core.Data
                   }
             }
 
-            internal static void AddFilteredHandler(Action<T> handler, Func<T, bool> filter)
+            // Retourne un ID pour pouvoir se désabonner
+            internal static int AddFilteredHandler(Action<T> handler, Func<T, bool> filter)
             {
                   EnsureFilteredCapacity();
-                  filteredHandlers[filteredCount++] = new FilteredHandler<T>(handler, filter);
+                  int id = _nextId++;
+                  _filteredHandlers[_filteredCount++] = new FilteredHandler<T>(handler, filter, id);
+
+                  return id;
             }
 
-            internal static void RemoveFilteredHandler(Action<T> handler)
+            // Suppression par référence d'action (pour compatibilité avec les méthodes nommées)
+            internal static bool RemoveFilteredHandler(Action<T> handler)
             {
-                  for (int i = 0; i < filteredCount; i++)
+                  for (int i = 0; i < _filteredCount; i++)
                   {
-                        if (ReferenceEquals(filteredHandlers[i].Handler, handler))
+                        if (ReferenceEquals(_filteredHandlers[i].Handler, handler))
                         {
-                              for (int j = i; j < filteredCount - 1; j++)
-                              {
-                                    filteredHandlers[j] = filteredHandlers[j + 1];
-                              }
+                              RemoveAt(i);
 
-                              filteredCount--;
-
-                              return;
+                              return true;
                         }
                   }
+
+                  return false;
+            }
+
+            // Suppression par ID (pour les lambdas)
+            internal static bool RemoveFilteredHandler(int id)
+            {
+                  for (int i = 0; i < _filteredCount; i++)
+                  {
+                        if (_filteredHandlers[i].Id == id)
+                        {
+                              RemoveAt(i);
+
+                              return true;
+                        }
+                  }
+
+                  return false;
+            }
+
+            private static void RemoveAt(int index)
+            {
+                  for (int j = index; j < _filteredCount - 1; j++)
+                  {
+                        _filteredHandlers[j] = _filteredHandlers[j + 1];
+                  }
+
+                  _filteredCount--;
             }
 
             private static void EnsureFilteredCapacity()
             {
-                  if (filteredHandlers == null)
+                  if (_filteredHandlers == null)
                   {
-                        filteredHandlers = new FilteredHandler<T>[4];
+                        _filteredHandlers = new FilteredHandler<T>[4];
                   }
-                  else if (filteredCount >= filteredHandlers.Length)
+                  else if (_filteredCount >= _filteredHandlers.Length)
                   {
-                        Array.Resize(ref filteredHandlers, filteredHandlers.Length * 2);
+                        Array.Resize(ref _filteredHandlers, _filteredHandlers.Length * 2);
                   }
             }
 
@@ -76,7 +105,8 @@ namespace Echo.Core.Data
             internal static void Clear()
             {
                   OnEvent = null;
-                  filteredCount = 0;
+                  _filteredCount = 0;
+                  _nextId = 1;
             }
       }
 }
