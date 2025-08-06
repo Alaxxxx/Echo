@@ -1,14 +1,17 @@
 # Echo: High-Performance Event Bus for Unity
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-blue.svg)](https://github.com/Alaxxxx/Echo)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/v/release/Alaxxxx/Echo?style=flat-square)](https://github.com/Alaxxxx/Echo/releases)
 [![Unity Version](https://img.shields.io/badge/Unity-2021.3%2B-green.svg)](https://unity3d.com/get-unity/download)
+[![GitHub last commit](https://img.shields.io/github/last-commit/Alaxxxx/Echo)](https://github.com/Alaxxxx/Echo/commits/main)
 
 **Echo** is a static, high-performance, and type-safe event bus system designed for Unity. It leverages `struct`-based events to achieve **zero-allocation publishing**, eliminating garbage collector spikes and ensuring smooth performance, even in high-frequency scenarios.
 
 With a fluent filtering API, automatic subscription management, and seamless integration with GameObjects, Echo provides a powerful yet simple solution for creating decoupled and maintainable code architecture in your projects.
 
-## ✨ Key Features
+<br>
+
+## ✨ Features
 
 - **🚀 Zero-Allocation Publishing**: Utilizes `structs` for events to prevent heap allocations and GC pressure.
 - **🔒 Type-Safe by Design**: Generic, interface-constrained API prevents runtime errors by ensuring event correctness at compile time.
@@ -17,7 +20,11 @@ With a fluent filtering API, automatic subscription management, and seamless int
 - **📦 Event Batching & Aggregation**: Collect high-frequency events and publish them in batches to optimize performance.
 - **🎮 Unity Integration**: Helper extensions for GameObjects allow for easy source/target event tracking.
 
-## 🚀 Installation
+<br>
+
+## 🚀 Getting Started
+
+### Installation
 
 <details>
 <summary><strong>1. Install via Git URL (Recommended)</strong></summary>
@@ -55,7 +62,9 @@ This method is great if you prefer a specific, stable version of the asset.
 - Unity 2021.3 or higher
 - .NET Standard 2.1 or higher
 
-## ⚡ Getting Started: The Basics
+<br>
+
+## The Basics
 
 Using Echo involves three simple steps: defining, publishing, and listening to events.
 
@@ -65,7 +74,9 @@ Echo's event bus is built around **`struct`**-based events to ensure **zero-allo
 > [!NOTE]
 > It is essential to understand that the system is **synchronous by default**: an event is published and fully handled within the same frame, providing predictable code flow. For asynchronous needs, such as delays, specific extension methods are available.
 
-#### Event Types
+<br>
+
+### Event Types
 
 **IEvent - Basic Events**
 ```csharp
@@ -80,6 +91,8 @@ public struct PlayerDiedEvent : IEvent
 }
 ```
 
+<br>
+
 **ITrackedEvent - Source/Target Events**
 ```csharp
 using Echo.Interface;
@@ -93,6 +106,8 @@ public struct DamageEvent : ITrackedEvent
 }
 ```
 
+<br>
+
 **Why Structs?**
 - **Zero allocations**: No garbage collection pressure during event publishing
 - **Memory efficiency**: Events are copied by value, no heap allocations
@@ -101,6 +116,8 @@ public struct DamageEvent : ITrackedEvent
 **IEvent vs ITrackedEvent:**
 - `IEvent`: Use for general game events (UI updates, state changes, notifications)
 - `ITrackedEvent`: Use when you need to track relationships between entities (combat, interactions, AI communication)
+
+<br>
 
 ### 1. Publishing Events
 
@@ -161,7 +178,7 @@ public class GameManager : MonoBehaviour
 }
 ```
 
-#### 3. Event Markers - Zero-Data Events
+### 3. Event Markers - Zero-Data Events
 
 Event markers are structs with no data, perfect for simple notifications:
 
@@ -189,11 +206,15 @@ void OnGameStarted(GameStartedEvent evt)
 - **Debugging**: Clear event flow in your game's architecture
 - **Zero cost**: No memory overhead, just a type signature
 
+<br>
+
 ## ♻️ Automatic Cleanup with Scoped Subscriptions
 
 Forgetting to unsubscribe from an event in `OnDisable` is one of the most common sources of memory leaks and bugs in Unity. To make this process more robust, Echo offers a safer pattern based on the `IDisposable` interface.
 
 The key insight is that this makes unsubscribing simpler and harder to get wrong. Instead of needing to manually call `Unsubscribe` with the exact same method reference, you just hold onto the subscription object and call its `Dispose()` method.
+
+<br>
 
 ### 1. Use Case 1: Subscriptions Tied to a MonoBehaviour's Lifecycle
 
@@ -219,9 +240,8 @@ public class UINotificationManager : MonoBehaviour
 
     void OnDisable()
     {
-        // This is where the magic happens. By calling Dispose(),
-        // the object handles its own unsubscription from the EventBus.
-        // No more risk of typos or forgetting the handler!
+        // By calling Dispose(), the object handles   
+        // its own unsubscription from the EventBus.
         _gameOverSubscription?.Dispose();
     }
 
@@ -231,6 +251,8 @@ public class UINotificationManager : MonoBehaviour
     }
 }
 ```
+
+<br>
 
 ### 2. Use Case 2: Temporary Subscriptions with `using` (Truly Automatic Cleanup)
 
@@ -281,6 +303,8 @@ public class TutorialManager : MonoBehaviour
 public struct PlayerJumpedEvent : IEvent { }
 ```
 
+<br>
+
 ## 🎯 Tracked Events: Source & Target
 
 For events where you need to know "who did what to whom" (e.g., combat, interactions), use `ITrackedEvent`. This interface adds `SourceId` and `TargetId` properties to your event.
@@ -300,6 +324,8 @@ public struct DamageDealtEvent : ITrackedEvent
     public float DamageAmount;
 }
 ```
+
+<br>
 
 ### 2. Publish with Source and Target
 Use the special extension methods to automatically populate the IDs from GameObjects.
@@ -350,14 +376,20 @@ public class PlayerHealth : MonoBehaviour
 }
 ```
 
+<br>
+
 ### How IDs Work: `GameObject.GetInstanceID()`
 
 By default, Echo's helper extensions use Unity's built-in `GameObject.GetInstanceID()` method to populate the `SourceId` and `TargetId`.
 
 `GetInstanceID()` returns a **unique integer** for every object that inherits from `UnityEngine.Object` (like GameObjects, Components, and Materials). This ID is guaranteed to be unique for the entire session your application is running, making it a fast and convenient way to reference specific object instances without passing direct object references.
 
+<br>
+
 > [!WARNING]
 > A common source of errors is confusing the ID of a `GameObject` with the ID of one of its `Component`s. When your script inherits from `MonoBehaviour`, `this.GetInstanceID()` returns the unique ID of the **script component instance**, while `this.gameObject.GetInstanceID()` returns the unique ID of the **GameObject** it is attached to. These two IDs will **not** be the same. Be sure to use the correct one for your logic (Echo's helpers typically expect the GameObject's ID).
+
+<br>
 
 ### Managing Complexity: A Note on ID Management
 
@@ -370,6 +402,8 @@ A common pattern is to create a central `EntityManager` or `Registry`:
 1.  When an important entity (like a player, enemy, or interactive object) is created (`Awake` or `OnEnable`), it registers itself with the manager.
 2.  The manager stores it in a `Dictionary<int, IGameEntity>`, using its `GetInstanceID()` as the key.
 3.  When you receive a tracked event, you can pass the `SourceId` or `TargetId` to your manager to retrieve the actual `GameObject` or a custom entity class.
+
+<br>
 
 ## 🔥 Advanced Subscriptions: Fluent Filtering
 
@@ -425,9 +459,11 @@ public class SpecialEffectsManager : MonoBehaviour
 }
 ```
 
+<br>
+
 ## 📦 Performance Tuning: Event Aggregation
 
-For high-frequency events (like analytics or continuous damage), publishing every single event can be inefficient. The `EventAggregator` lets you collect events and publish them as a single batch.
+For high-frequency events (like analytics or continuous damage), publishing every single event can be inefficient in some cases. The `EventAggregator` lets you collect events and publish them as a single batch.
 
 ### Collecting and Flushing Events
 
@@ -454,6 +490,8 @@ public class AnalyticsManager : MonoBehaviour
 }
 ```
 
+<br>
+
 You can also use `.CollectAndFlush(flushThreshold)` to automatically publish when the buffer reaches a certain size:
 
 ```csharp
@@ -463,6 +501,17 @@ public void TrackHighFrequencyEvent()
     new AnalyticsEvent().CollectAndFlush(50);
 }
 ```
+
+<br>
+
+> [!NOTE]
+> The **EventAggregator** is a performance tool for **specific scenarios** and should not be treated as a default optimization. Firing an event directly with `.Fire()` is already extremely fast due to the zero-allocation nature of the system.
+>
+> The aggregator introduces its own small overhead by buffering events. This cost is only justified in very high-frequency situations (e.g., hundreds of events per frame from analytics, particle collisions, etc.). In these specific cases, the cost of making many individual calls to the event publishing system can become greater than the cost of buffering.
+>
+> **As a rule of thumb:** use direct publishing (`.Fire()`). Only consider using the aggregator if you have profiled your application and identified a clear bottleneck caused by an exceptionally high volume of events.
+
+<br>
 
 ## 📖 More Features & API Highlights
 
@@ -488,6 +537,8 @@ DamageEvent[] damageBatch = GetDamageEvents();
 damageBatch.FireBatch();
 ```
 
+<br>
+
 ### Memory Management
 
 The `EventAggregator` provides tools to manage memory for event buffers:
@@ -504,6 +555,8 @@ int pending = EventAggregator<MyEvent>.PendingCount;
 int capacity = EventAggregator<MyEvent>.Capacity;
 ```
 
+<br>
+
 ## 💡 Best Practices
 
 ### Event Design
@@ -518,11 +571,25 @@ public struct PlayerLevelUpEvent : IEvent
 }
 
 // ❌ Avoid: Reference types
-public class PlayerEvent : IEvent  // Don't use classes
+public struct PlayerEvent : IEvent
 {
     public string PlayerName;
 }
 ```
+
+<br>
+
+> [!NOTE]
+> The **memory layout** and **size** of your event `struct` are critical for performance. The layout refers to how a struct's fields are arranged in memory by the C# compiler. By default, the compiler may add "padding" bytes between fields to ensure they align with the CPU's natural word size (e.g., aligning a 4-byte `int` on a 4-byte boundary). This can make a struct larger than the sum of its parts.
+>
+> **Why does this matter?** Because events are `struct`s, they are copied by value every time they are published. A larger struct means more data is copied to the stack, which consumes more CPU cycles. In high-frequency scenarios, this can become a noticeable overhead.
+>
+> **Recommendations:**
+> * **Keep structs small and focused.** An event should carry only the essential data required by its listeners.
+> * **Aim for a size under 64 bytes.** This is a common CPU cache line size. Keeping your struct within this limit can improve memory access patterns. You can check a struct's size with `sizeof(MyEventStruct)`.
+> * **Order fields wisely.** For advanced optimization, you can use the `[StructLayout(LayoutKind.Explicit)]` attribute to control the exact memory layout and eliminate padding, but this is often unnecessary. A simpler trick is to declare fields from largest to smallest (e.g., `long`, `int`, `short`, `bool`) to help the compiler minimize padding naturally.
+
+<br>
 
 ### Subscription Management
 
@@ -545,6 +612,8 @@ public class GameSystem : MonoBehaviour
 }
 ```
 
+<br>
+
 ### Performance Optimization
 
 ```csharp
@@ -560,154 +629,4 @@ highFrequencyEvent.CollectAndFlush(50);
 EventAggregator<DamageEvent>.Reserve(1000);
 ```
 
-## 🎯 Examples
-
-### Example 1: Combat System
-
-```csharp
-// Define events
-public struct AttackEvent : ITrackedEvent
-{
-    public int SourceId { get; set; }
-    public int TargetId { get; set; }
-    public float Damage;
-    public WeaponType Weapon;
-}
-
-public struct HealthChangedEvent : IEvent
-{
-    public int EntityId;
-    public float OldHealth;
-    public float NewHealth;
-}
-
-// Combat manager
-public class CombatManager : MonoBehaviour
-{
-    void Start()
-    {
-        // Subscribe to attack events
-        EventBus.Subscribe<AttackEvent>(ProcessAttack);
-        
-        // Subscribe to critical hits only
-        EventBus.Where<AttackEvent>()
-            .WithRange(evt => evt.Damage, 100f, float.MaxValue)
-            .Subscribe(OnCriticalHit);
-    }
-    
-    void ProcessAttack(AttackEvent attack)
-    {
-        var target = FindEntityById(attack.TargetId);
-        if (target != null)
-        {
-            var oldHealth = target.Health;
-            target.Health -= attack.Damage;
-            
-            // Fire health changed event
-            new HealthChangedEvent
-            {
-                EntityId = attack.TargetId,
-                OldHealth = oldHealth,
-                NewHealth = target.Health
-            }.Fire();
-        }
-    }
-}
-
-// Weapon script
-public class Weapon : MonoBehaviour
-{
-    public float damage = 25f;
-    
-    public void Attack(GameObject target)
-    {
-        new AttackEvent
-        {
-            Damage = damage,
-            Weapon = WeaponType.Sword
-        }.FireFromTo(gameObject, target);
-    }
-}
-```
-
-### Example 2: UI System
-
-```csharp
-// UI Events
-public struct UIUpdateEvent : IEvent
-{
-    public UIElementType ElementType;
-    public object Data;
-}
-
-public struct PlayerStatsChangedEvent : IEvent
-{
-    public int PlayerId;
-    public PlayerStats Stats;
-}
-
-// UI Manager
-public class UIManager : MonoBehaviour
-{
-    [SerializeField] private Text healthText;
-    [SerializeField] private Text scoreText;
-    
-    void Start()
-    {
-        // Subscribe to player stats changes
-        EventBus.Where<PlayerStatsChangedEvent>()
-            .WithValue(evt => evt.PlayerId, GameManager.LocalPlayerId)
-            .Subscribe(UpdatePlayerUI);
-            
-        // Subscribe to UI-specific updates
-        EventBus.Where<UIUpdateEvent>()
-            .WithValue(evt => evt.ElementType, UIElementType.Health)
-            .Subscribe(UpdateHealthDisplay);
-    }
-    
-    void UpdatePlayerUI(PlayerStatsChangedEvent evt)
-    {
-        healthText.text = $"Health: {evt.Stats.Health}";
-        scoreText.text = $"Score: {evt.Stats.Score}";
-    }
-}
-```
-
-### Example 3: Analytics System
-
-```csharp
-// Analytics events
-public struct PlayerActionEvent : IEvent
-{
-    public string ActionName;
-    public Vector3 Position;
-    public float Timestamp;
-}
-
-// Analytics collector
-public class AnalyticsManager : MonoBehaviour
-{
-    private const int BATCH_SIZE = 50;
-    
-    void Start()
-    {
-        // Collect all player actions
-        EventBus.Subscribe<PlayerActionEvent>(CollectAnalytics);
-        
-        // Auto-flush every minute
-        InvokeRepeating(nameof(FlushAnalytics), 60f, 60f);
-    }
-    
-    void CollectAnalytics(PlayerActionEvent evt)
-    {
-        // Collect with auto-flush
-        evt.CollectAndFlush(BATCH_SIZE);
-    }
-    
-    void FlushAnalytics()
-    {
-        // Manual flush for time-based batching
-        EventAggregator<PlayerActionEvent>.Flush();
-    }
-}
-```
+<br>
