@@ -1,9 +1,19 @@
 # Echo: High-Performance Event Bus for Unity
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Release](https://img.shields.io/github/v/release/Alaxxxx/Echo?style=flat-square)](https://github.com/Alaxxxx/Echo/releases)
-[![Unity Version](https://img.shields.io/badge/Unity-2021.3%2B-green.svg)](https://unity3d.com/get-unity/download)
-[![GitHub last commit](https://img.shields.io/github/last-commit/Alaxxxx/Echo)](https://github.com/Alaxxxx/Echo/commits/main)
+<p align="center">
+  <a href="https://github.com/Alaxxxx/Echo/stargazers"><img src="https://img.shields.io/github/stars/Alaxxxx/Echo?style=flat-square&logo=github&color=FFC107" alt="GitHub Stars"></a>
+  &nbsp;
+  <a href="https://github.com/Alaxxxx?tab=followers"><img src="https://img.shields.io/github/followers/Alaxxxx?style=flat-square&logo=github&label=Followers&color=282c34" alt="GitHub Followers"></a>
+  &nbsp;
+  <a href="https://github.com/Alaxxxx/Echo/commits/main"><img src="https://img.shields.io/github/last-commit/Alaxxxx/Echo?style=flat-square&logo=github&color=blueviolet" alt="Last Commit"></a>
+</p>
+<p align="center">
+  <a href="https://github.com/Alaxxxx/Echo/releases"><img src="https://img.shields.io/github/v/release/Alaxxxx/Echo?style=flat-square" alt="Release"></a>
+  &nbsp;
+  <a href="https://unity.com/"><img src="https://img.shields.io/badge/Unity-2021.3+-2296F3.svg?style=flat-square&logo=unity" alt="Unity Version"></a>
+  &nbsp;
+  <a href="https://github.com/Alaxxxx/Echo/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Alaxxxx/Echo?style=flat-square" alt="License"></a>
+</p>
 
 **Echo** is a static, high-performance, and type-safe event bus system designed for Unity. It leverages `struct`-based events to achieve **zero-allocation publishing**, eliminating garbage collector spikes and ensuring smooth performance, even in high-frequency scenarios.
 
@@ -630,3 +640,17 @@ EventAggregator<DamageEvent>.Reserve(1000);
 ```
 
 <br>
+
+## 🤝 Contributing & Supporting
+
+This project is open-source under the **MIT License**, and any form of contribution is welcome and greatly appreciated!
+
+If **Echo** helps you build a cleaner, more performant architecture in your projects, the best way to show your support is by **giving it a star ⭐️ on GitHub!** It helps a lot with visibility and motivates me to continue its development.
+
+Here are other ways you can get involved:
+
+* **💡 Share Ideas & Report Bugs:** Have a great idea for a new feature or found a potential performance issue? [Open an issue](https://github.com/Alaxxxx/Echo/issues) to share the details.
+* **🔌 Contribute Code:** Feel free to fork the repository and submit a pull request for bug fixes or new features.
+* **🗣️ Spread the Word:** Know other developers passionate about clean code and performance? Let them know about Echo!
+
+Every contribution is incredibly valuable. Thank you for your support!
