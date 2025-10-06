@@ -27,7 +27,6 @@ With a fluent filtering API, automatic subscription management, and seamless int
 - **🔒 Type-Safe by Design**: Generic, interface-constrained API prevents runtime errors by ensuring event correctness at compile time.
 - **🎯 Advanced Filtering API**: A fluent, chainable interface (`Where(...).And(...).Or(...)`) to subscribe to events that meet complex conditions.
 - **♻️ Automatic Subscription Management**: Scoped subscriptions (`IDisposable`) handle cleanup automatically, preventing common memory leaks.
-- **📦 Event Batching & Aggregation**: Collect high-frequency events and publish them in batches to optimize performance.
 - **🎮 Unity Integration**: Helper extensions for GameObjects allow for easy source/target event tracking.
 
 <br>
@@ -264,7 +263,7 @@ public class UINotificationManager : MonoBehaviour
 
 <br>
 
-### 2. Use Case 2: Temporary Subscriptions with `using` (Truly Automatic Cleanup)
+### 2. Use Case 2: Temporary Subscriptions with `using`
 
 There are times when you only need to listen for an event within a specific scope, like a single method or a coroutine. This is where the `IDisposable` pattern becomes incredibly powerful with C#'s `using` statement, which provides fully guaranteed and automatic cleanup.
 
@@ -471,58 +470,6 @@ public class SpecialEffectsManager : MonoBehaviour
 
 <br>
 
-## 📦 Performance Tuning: Event Aggregation
-
-For high-frequency events (like analytics or continuous damage), publishing every single event can be inefficient in some cases. The `EventAggregator` lets you collect events and publish them as a single batch.
-
-### Collecting and Flushing Events
-
-Use the `.Collect()` extension to add an event to a temporary buffer. Then, call `EventAggregator<T>.Flush()` to publish all collected events at once.
-
-```csharp
-using Echo.Core.Data;
-using Echo.Core.Extensions;
-
-public class AnalyticsManager : MonoBehaviour
-{
-    public void TrackPlayerAction(Vector3 position, string action)
-    {
-        // This event is not published immediately. It is collected.
-        new PlayerActionEvent { Position = position, ActionName = action }.Collect();
-    }
-
-    // Call this periodically, or when the scene changes
-    public void SendAnalyticsBatch()
-    {
-        // Publishes all collected PlayerActionEvent instances in one go
-        EventAggregator<PlayerActionEvent>.Flush();
-    }
-}
-```
-
-<br>
-
-You can also use `.CollectAndFlush(flushThreshold)` to automatically publish when the buffer reaches a certain size:
-
-```csharp
-public void TrackHighFrequencyEvent()
-{
-    // Auto-flush when 50 events are collected
-    new AnalyticsEvent().CollectAndFlush(50);
-}
-```
-
-<br>
-
-> [!NOTE]
-> The **EventAggregator** is a performance tool for **specific scenarios** and should not be treated as a default optimization. Firing an event directly with `.Fire()` is already extremely fast due to the zero-allocation nature of the system.
->
-> The aggregator introduces its own small overhead by buffering events. This cost is only justified in very high-frequency situations (e.g., hundreds of events per frame from analytics, particle collisions, etc.). In these specific cases, the cost of making many individual calls to the event publishing system can become greater than the cost of buffering.
->
-> **As a rule of thumb:** use direct publishing (`.Fire()`). Only consider using the aggregator if you have profiled your application and identified a clear bottleneck caused by an exceptionally high volume of events.
-
-<br>
-
 ## 📖 More Features & API Highlights
 
 ### Event Extensions
@@ -545,24 +492,6 @@ playerEvent.FireAs(evt => new UiUpdateEvent { PlayerId = evt.Id });
 // Publish an entire array or list of events at once
 DamageEvent[] damageBatch = GetDamageEvents();
 damageBatch.FireBatch();
-```
-
-<br>
-
-### Memory Management
-
-The `EventAggregator` provides tools to manage memory for event buffers:
-
-```csharp
-// Pre-allocate buffer space if you know many events are coming
-EventAggregator<MyEvent>.Reserve(1000);
-
-// Free up unused memory after a batch is flushed
-EventAggregator<MyEvent>.TrimExcess();
-
-// Check the state of the aggregator
-int pending = EventAggregator<MyEvent>.PendingCount;
-int capacity = EventAggregator<MyEvent>.Capacity;
 ```
 
 <br>
@@ -621,24 +550,7 @@ public class GameSystem : MonoBehaviour
     }
 }
 ```
-
-<br>
-
-### Performance Optimization
-
-```csharp
-// ✅ Good: Batch operations when possible
-var events = new DamageEvent[100];
-// ... populate events ...
-events.FireBatch();
-
-// ✅ Good: Use aggregation for high-frequency events
-highFrequencyEvent.CollectAndFlush(50);
-
-// ✅ Good: Reserve capacity for known workloads
-EventAggregator<DamageEvent>.Reserve(1000);
-```
-
+~~~~
 <br>
 
 ## 🤝 Contributing & Supporting

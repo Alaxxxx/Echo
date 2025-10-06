@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Runtime.CompilerServices;
-using OpalStudio.Echo.Core.Data;
 using OpalStudio.Echo.Interface;
 using UnityEngine;
 
@@ -29,7 +28,7 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <returns>A Unity coroutine enumerator that handles the delay execution of the event.</returns>
             /// <remarks>Allocates a new enumerator for the coroutine.</remarks>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static System.Collections.IEnumerator FireDelayed<T>(this T eventData, float delay) where T : struct, IEvent
+            public static IEnumerator FireDelayed<T>(this T eventData, float delay) where T : struct, IEvent
             {
                   yield return new WaitForSeconds(delay);
                   EventBus.Publish(eventData);
@@ -42,7 +41,7 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <param name="eventData">The event data to be scheduled for publishing.</param>
             /// <returns>An enumerator that waits for the next frame before publishing the event.</returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static System.Collections.IEnumerator FireNextFrame<T>(this T eventData) where T : struct, IEvent
+            public static IEnumerator FireNextFrame<T>(this T eventData) where T : struct, IEvent
             {
                   yield return null;
                   EventBus.Publish(eventData);
@@ -52,11 +51,11 @@ namespace OpalStudio.Echo.Core.Extensions
             /// Transforms the specified event data and publishes the transformed event to the event bus.
             /// </summary>
             /// <typeparam name="T">The type of the source event, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
-            /// <typeparam name="TU">The type of the target event, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
+            /// <typeparam name="Tu">The type of the target event, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
             /// <param name="eventData">The event data to be transformed and published.</param>
             /// <param name="transform">A function that transforms the source event data into the target event data.</param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static void FireAs<T, TU>(this T eventData, Func<T, TU> transform) where T : struct, IEvent where TU : struct, IEvent
+            public static void FireAs<T, Tu>(this T eventData, Func<T, Tu> transform) where T : struct, IEvent where Tu : struct, IEvent
             {
                   EventBus.Publish(transform(eventData));
             }
@@ -166,76 +165,6 @@ namespace OpalStudio.Echo.Core.Extensions
                   EventBus.Publish(eventData);
 
                   return eventData;
-            }
-
-            /// <summary>
-            /// Publishes a batch of events to the event bus.
-            /// </summary>
-            /// <typeparam name="T">The type of events being published, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
-            /// <param name="events">An array of event data to be published.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static void FireBatch<T>(this T[] events) where T : struct, IEvent
-            {
-                  EventBus.PublishBatch(events);
-            }
-
-            /// <summary>
-            /// Publishes a batch of events to the event bus.
-            /// </summary>
-            /// <param name="events">The batch of events to be published, provided as a read-only span of event data.</param>
-            /// <typeparam name="T">The type of the events being published, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static void FireBatch<T>(this ReadOnlySpan<T> events) where T : struct, IEvent
-            {
-                  EventBus.PublishBatch(events);
-            }
-
-            /// <summary>
-            /// Collects the specified event data for later aggregation or processing.
-            /// </summary>
-            /// <typeparam name="T">The type of the event being collected, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
-            /// <param name="eventData">The event data to be collected.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static void Collect<T>(this T eventData) where T : struct, IEvent
-            {
-                  EventAggregator<T>.Collect(eventData);
-            }
-
-            /// <summary>
-            /// Collects the specified event and flushes the events when the collection reaches the specified threshold.
-            /// </summary>
-            /// <typeparam name="T">The type of the event being collected, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
-            /// <param name="eventData">The event data to be collected.</param>
-            /// <param name="flushThreshold">The threshold of collected events at which a flush will occur. Defaults to 100 if not specified.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static void CollectAndFlush<T>(this T eventData, int flushThreshold = 100) where T : struct, IEvent
-            {
-                  EventAggregator<T>.CollectWithAutoFlush(eventData, flushThreshold);
-            }
-
-            /// <summary>
-            /// Collects and aggregates a sequence of events to be processed together.
-            /// </summary>
-            /// <typeparam name="T">The type of events to collect, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
-            /// <param name="events">The sequence of events to collect.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static void CollectAll<T>(this IEnumerable<T> events) where T : struct, IEvent
-            {
-                  foreach (T e in events)
-                  {
-                        EventAggregator<T>.Collect(e);
-                  }
-            }
-
-            /// <summary>
-            /// Collects a batch of events and aggregates them for processing.
-            /// </summary>
-            /// <typeparam name="T">The type of the events being collected, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
-            /// <param name="events">The read-only span of events to be collected.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static void CollectAll<T>(this ReadOnlySpan<T> events) where T : struct, IEvent
-            {
-                  EventAggregator<T>.CollectBatch(events);
             }
       }
 }

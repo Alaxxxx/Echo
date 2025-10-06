@@ -19,7 +19,7 @@ namespace OpalStudio.Echo.Core.Data
 
                   for (int i = 0; i < filteredCount; i++)
                   {
-                        ref var handler = ref filteredHandlers[i];
+                        ref FilteredHandler<T> handler = ref filteredHandlers[i];
 
                         if (handler.ShouldInvoke(eventData))
                         {

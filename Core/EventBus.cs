@@ -7,7 +7,7 @@ using Unity.Burst.CompilerServices;
 namespace OpalStudio.Echo.Core
 {
       /// <summary>
-      /// A static class that facilitates the publish-subscribe pattern for event handling.
+      /// A static class that handles the publish-subscribe pattern for event handling.
       /// Provides methods to publish events, batch publish events, and manage subscriptions to events.
       /// </summary>
       public static class EventBus
@@ -23,28 +23,6 @@ namespace OpalStudio.Echo.Core
             public static void Publish<T>(T eventData) where T : struct, IEvent
             {
                   Events<T>.Invoke(eventData);
-            }
-
-            /// <summary>
-            /// Publishes a batch of events of the specified type to all subscribers.
-            /// </summary>
-            /// <typeparam name="T">The type of the events to be published. Must be a struct implementing <see cref="IEvent"/>.</typeparam>
-            /// <param name="events">A read-only span containing the events to be published.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining), SkipLocalsInit]
-            public static void PublishBatch<T>(ReadOnlySpan<T> events) where T : struct, IEvent
-            {
-                  Events<T>.InvokeBatch(events);
-            }
-
-            /// <summary>
-            /// Publishes a batch of events of the specified type to all subscribers.
-            /// </summary>
-            /// <typeparam name="T">The type of the events to be published. Must be a struct implementing <see cref="IEvent"/>.</typeparam>
-            /// <param name="events">An array of event data instances to be published to subscribers.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining), SkipLocalsInit]
-            public static void PublishBatch<T>(T[] events) where T : struct, IEvent
-            {
-                  Events<T>.InvokeBatch(events.AsSpan());
             }
 
 #endregion
@@ -65,7 +43,7 @@ namespace OpalStudio.Echo.Core
             /// <summary>
             /// Subscribes to an event of the specified type with a scoped subscription.
             /// This ensures the subscription is automatically disposed when the
-            /// corresponding <see cref="ScopedSubscription{T}"/> object is disposed.
+            /// corresponding <see cref="ScopedSubscription{T}"/> object is disposed of.
             /// </summary>
             /// <typeparam name="T">The type of the event to subscribe to. Must be a struct implementing <see cref="IEvent"/>.</typeparam>
             /// <param name="action">The action to invoke when the event of type <typeparamref name="T"/> is raised.</param>
@@ -159,24 +137,6 @@ namespace OpalStudio.Echo.Core
             public static void Unsubscribe<T>(Action<T> action) where T : struct, IEvent
             {
                   Events<T>.OnEvent -= action;
-            }
-
-            /// <summary>
-            /// Unsubscribes a filtered event handler for the specified event type.
-            /// </summary>
-            /// <typeparam name="T">The type of the event for which the filtered handler was registered. Must be a struct implementing <see cref="IEvent"/>.</typeparam>
-            /// <param name="action">The filtered event handler to be unsubscribed.</param>
-            /// <remarks>
-            /// This method should be used cautiously when unsubscribing filtered handlers tied to lambdas,
-            /// as they may not reliably reference the originally subscribed instance.
-            /// For a more consistent approach, consider using
-            /// the <see cref="SubscribeFilteredScoped{T}"/> method which provides an <see cref="IDisposable"/> encapsulation.
-            /// </remarks>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [Obsolete("Unsubscribing a filtered event by reference is unreliable for lambdas. Use the IDisposable pattern returned by SubscribeFilteredScoped.", false)]
-            public static void UnsubscribeFiltered<T>(Action<T> action) where T : struct, IEvent
-            {
-                  Events<T>.RemoveFilteredHandler(action);
             }
 
             /// <summary>
