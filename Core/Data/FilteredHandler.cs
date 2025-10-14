@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using OpalStudio.Echo.Interface;
 
 namespace OpalStudio.Echo.Core.Data
@@ -17,7 +16,6 @@ namespace OpalStudio.Echo.Core.Data
                   Id = id;
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool ShouldInvoke(T eventData) => Filter?.Invoke(eventData) ?? true;
       }
 }

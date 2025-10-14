@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using OpalStudio.Echo.Interface;
 
 namespace OpalStudio.Echo.Core.Data
@@ -12,7 +11,6 @@ namespace OpalStudio.Echo.Core.Data
             private static int filteredCount;
             private static int nextId = 1;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static void Invoke(T eventData)
             {
                   OnEvent?.Invoke(eventData);
@@ -28,7 +26,6 @@ namespace OpalStudio.Echo.Core.Data
                   }
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static void InvokeBatch(ReadOnlySpan<T> events)
             {
                   for (int i = 0; i < events.Length; i++)
@@ -94,7 +91,6 @@ namespace OpalStudio.Echo.Core.Data
                   }
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static void Clear()
             {
                   OnEvent = null;

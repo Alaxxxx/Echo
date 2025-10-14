@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
 using OpalStudio.Echo.Interface;
 using UnityEngine;
 
@@ -13,7 +12,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// </summary>
             /// <typeparam name="T">The type of the event being published, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
             /// <param name="eventData">The event data to be published.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void Fire<T>(this T eventData) where T : struct, IEvent
             {
                   EventBus.Publish(eventData);
@@ -27,7 +25,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <param name="delay">The amount of time, in seconds, to wait before publishing the event.</param>
             /// <returns>A Unity coroutine enumerator that handles the delay execution of the event.</returns>
             /// <remarks>Allocates a new enumerator for the coroutine.</remarks>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static IEnumerator FireDelayed<T>(this T eventData, float delay) where T : struct, IEvent
             {
                   yield return new WaitForSeconds(delay);
@@ -40,7 +37,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <typeparam name="T">The type of the event being scheduled, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
             /// <param name="eventData">The event data to be scheduled for publishing.</param>
             /// <returns>An enumerator that waits for the next frame before publishing the event.</returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static IEnumerator FireNextFrame<T>(this T eventData) where T : struct, IEvent
             {
                   yield return null;
@@ -54,7 +50,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <typeparam name="Tu">The type of the target event, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
             /// <param name="eventData">The event data to be transformed and published.</param>
             /// <param name="transform">A function that transforms the source event data into the target event data.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void FireAs<T, Tu>(this T eventData, Func<T, Tu> transform) where T : struct, IEvent where Tu : struct, IEvent
             {
                   EventBus.Publish(transform(eventData));
@@ -66,7 +61,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <typeparam name="T">The type of the event being published, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
             /// <param name="eventData">The event data to be published.</param>
             /// <param name="condition">A boolean value indicating whether the event should be published.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void FireIf<T>(this T eventData, bool condition) where T : struct, IEvent
             {
                   if (condition)
@@ -82,7 +76,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <param name="eventData">The event data to be published.</param>
             /// <param name="condition">A function that evaluates whether the event should be published.</param>
             /// <remarks>Allocates a new function delegate for the condition check.</remarks>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void FireIf<T>(this T eventData, Func<bool> condition) where T : struct, IEvent
             {
                   if (condition())
@@ -98,7 +91,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <param name="eventData">The event data that may be fired.</param>
             /// <param name="predicate">A function that evaluates a condition against the given event data.</param>
             /// <remarks>Allocates a new function delegate for the predicate check.</remarks>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void FireIf<T>(this T eventData, Func<T, bool> predicate) where T : struct, IEvent
             {
                   if (predicate(eventData))
@@ -114,7 +106,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <param name="eventData">The event data to be fired.</param>
             /// <param name="source">The source GameObject from which the event originates.</param>
             /// <param name="target">The target GameObject to which the event is directed. If null, the target is considered undefined.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void FireFromTo<T>(this T eventData, GameObject source, GameObject target) where T : struct, ITrackedEvent
             {
                   eventData.SourceId = source.GetInstanceID();
@@ -129,7 +120,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <param name="eventData">The event data to be published. Its source and target information will be updated.</param>
             /// <param name="source">The GameObject representing the source of the event.</param>
             /// <param name="targetId">The optional ID of the target the event is directed to. Defaults to -1 if not specified.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void FireFrom<T>(this T eventData, GameObject source, int targetId = -1) where T : struct, ITrackedEvent
             {
                   eventData.SourceId = source.GetInstanceID();
@@ -145,7 +135,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <param name="eventData">The event data to be fired.</param>
             /// <param name="target">The target GameObject to which the event is directed.</param>
             /// <param name="sourceId">The identifier of the source from which the event originates. Defaults to -1 if no specific source ID is provided.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void FireTo<T>(this T eventData, GameObject target, int sourceId = -1) where T : struct, ITrackedEvent
             {
                   eventData.SourceId = sourceId;
@@ -159,7 +148,6 @@ namespace OpalStudio.Echo.Core.Extensions
             /// <typeparam name="T">The type of the event being published, which must implement <see cref="IEvent"/> and be a value type.</typeparam>
             /// <param name="eventData">The event data to be published.</param>
             /// <returns>Returns the published event data.</returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static T FireAndReturn<T>(this T eventData) where T : struct, IEvent
             {
                   EventBus.Publish(eventData);
