@@ -1,12 +1,10 @@
 {
-    "name": "Echo",
+    "name": "Echo.Core",
     "rootNamespace": "",
-    "references": [
-        "GUID:2665a8d13d1b3f18800f46e256720795"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

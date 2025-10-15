@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using OpalStudio.Echo.Interface;
 
-namespace OpalStudio.Echo.Core.Data
+namespace OpalStudio.Echo.Unity.Data
 {
       public readonly struct EventFilterBuilder<T> where T : struct, IEvent
       {
@@ -13,7 +12,6 @@ namespace OpalStudio.Echo.Core.Data
                   _filter = filter;
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public EventFilterBuilder<T> And(Func<T, bool> condition)
             {
                   if (_filter == null)
@@ -26,7 +24,6 @@ namespace OpalStudio.Echo.Core.Data
                   return new EventFilterBuilder<T>(evt => currentFilter(evt) && condition(evt));
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public EventFilterBuilder<T> Or(Func<T, bool> condition)
             {
                   if (_filter == null)
@@ -39,12 +36,11 @@ namespace OpalStudio.Echo.Core.Data
                   return new EventFilterBuilder<T>(evt => currentFilter(evt) || condition(evt));
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Subscribe(Action<T> handler)
             {
                   if (_filter == null)
                   {
-                        EventBus.Subscribe(handler);
+                        Core.EventBus.Subscribe(handler);
                   }
                   else
                   {
@@ -52,7 +48,6 @@ namespace OpalStudio.Echo.Core.Data
                   }
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public FilteredSubscription<T> SubscribeScoped(Action<T> handler)
             {
                   return _filter == null ? EventBus.SubscribeFilteredScoped(handler, static _ => true) : EventBus.SubscribeFilteredScoped(handler, _filter);

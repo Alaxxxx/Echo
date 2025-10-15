@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using OpalStudio.Echo.Interface;
 
-namespace OpalStudio.Echo.Core.Data
+namespace OpalStudio.Echo.Unity.Data
 {
       internal readonly struct FilteredHandler<T> where T : struct, IEvent
       {

@@ -1,7 +1,7 @@
 ﻿using System;
 using OpalStudio.Echo.Interface;
 
-namespace OpalStudio.Echo.Core.Data
+namespace OpalStudio.Echo.Unity.Data
 {
       public readonly struct FilteredSubscription<T> : IDisposable where T : struct, IEvent
       {
