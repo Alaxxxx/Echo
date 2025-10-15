@@ -8,7 +8,7 @@ namespace OpalStudio.Echo.Core
       /// A static class that handles the publish-subscribe pattern for event handling.
       /// Provides methods to publish events, batch publish events, and manage subscriptions to events.
       /// </summary>
-      public static class EventBus
+      public static partial class EventBus
       {
 #region Publish
 
