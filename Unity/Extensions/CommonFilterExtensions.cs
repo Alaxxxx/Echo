@@ -17,7 +17,7 @@ namespace OpalStudio.Echo.Unity.Extensions
             {
                   return builder.And(evt =>
                   {
-                        var value = selector(evt);
+                        TValue value = selector(evt);
 
                         return value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0;
                   });

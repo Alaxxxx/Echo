@@ -7,7 +7,7 @@ namespace OpalStudio.Echo.Unity.Data
       {
             private readonly Func<T, bool> _filter;
 
-            private EventFilterBuilder(Func<T, bool> filter = null)
+            private EventFilterBuilder(Func<T, bool> filter)
             {
                   _filter = filter;
             }
@@ -50,7 +50,7 @@ namespace OpalStudio.Echo.Unity.Data
 
             public FilteredSubscription<T> SubscribeScoped(Action<T> handler)
             {
-                  return _filter == null ? EventBus.SubscribeFilteredScoped(handler, static _ => true) : EventBus.SubscribeFilteredScoped(handler, _filter);
+                  return EventBus.SubscribeFilteredScoped(handler, _filter);
             }
       }
 }

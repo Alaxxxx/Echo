@@ -2,6 +2,10 @@
 
 namespace OpalStudio.Echo.Core.Extensions
 {
+      /// <summary>
+      /// Platform-agnostic publish helpers. These extensions live in the Core
+      /// assembly and have no dependency on UnityEngine.
+      /// </summary>
       public static class EventExtensions
       {
             /// <summary>

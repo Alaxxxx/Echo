@@ -1,6 +1,6 @@
 ﻿{
     "name": "com.opalstudio.echo",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "displayName": "Echo",
     "description": "Echo is a Unity package providing a simple yet powerful totally decoupled event system. It allows you to create and manage events in your Unity projects with ease, promoting clean architecture and separation of concerns.",
     "unity": "2021.3",

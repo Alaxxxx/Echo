@@ -3,7 +3,17 @@ using OpalStudio.Echo.Interface;
 
 namespace OpalStudio.Echo.Core.Data
 {
-      public readonly struct ScopedSubscription<T> : IEquatable<ScopedSubscription<T>>, IDisposable where T : struct, IEvent
+      /// <summary>
+      /// A disposable handle to an event subscription. Disposing it unsubscribes
+      /// the associated handler from the event bus.
+      /// </summary>
+      /// <remarks>
+      /// This struct is intentionally not <see cref="IEquatable{T}"/>. A subscription
+      /// is a lifetime token, not a value, and equality between two tokens has no
+      /// meaningful semantics.
+      /// Calling <see cref="Dispose"/> more than once is safe.
+      /// </remarks>
+      public readonly struct ScopedSubscription<T> : IDisposable where T : struct, IEvent
       {
             private readonly Action<T> _action;
 
@@ -18,21 +28,6 @@ namespace OpalStudio.Echo.Core.Data
                   {
                         EventBus.Unsubscribe(_action);
                   }
-            }
-
-            public bool Equals(ScopedSubscription<T> other)
-            {
-                  return Equals(_action, other._action);
-            }
-
-            public override bool Equals(object obj)
-            {
-                  return obj is ScopedSubscription<T> other && Equals(other);
-            }
-
-            public override int GetHashCode()
-            {
-                  return _action?.GetHashCode() ?? 0;
             }
       }
 }

@@ -1,4 +1,4 @@
-# Echo: High-Performance Event Bus for Unity
+~~~~# Echo: High-Performance Event Bus for Unity
 
 <p align="center">
   <a href="https://github.com/Alaxxxx/Echo/stargazers"><img src="https://img.shields.io/github/stars/Alaxxxx/Echo?style=flat-square&logo=github&color=FFC107" alt="GitHub Stars"></a>

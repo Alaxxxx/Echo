@@ -1,0 +1,104 @@
+/* ---------- Sidebar rows ---------- */
+
+.echo-channel-row {
+    transition-duration: 80ms;
+    transition-timing-function: ease-out;
+}
+
+.echo-channel-row:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.echo-channel-row--selected:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* ---------- Toolbar buttons ---------- */
+
+.echo-toolbar-button {
+    transition-duration: 80ms, 80ms;
+    transition-timing-function: ease-out, ease-out;
+}
+
+.echo-toolbar-button:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.echo-toolbar-button:active {
+    background-color: rgba(255, 255, 255, 0.10);
+}
+
+.echo-toolbar-button--active {
+    background-color: rgba(100, 154, 255, 0.14);
+    color: rgb(100, 154, 255);
+}
+
+.echo-toolbar-button--active:hover {
+    background-color: rgba(100, 154, 255, 0.22);
+}
+
+/* ---------- Tabs ---------- */
+
+.echo-tab {
+    transition-duration: 120ms;
+    transition-timing-function: ease-out;
+}
+
+.echo-tab:hover {
+    color: rgb(220, 220, 230);
+}
+
+/* ---------- Cards (interactive) ---------- */
+
+.echo-card--interactive {
+    transition-duration: 120ms, 120ms;
+    transition-timing-function: ease-out, ease-out;
+}
+
+.echo-card--interactive:hover {
+    border-color: rgba(100, 154, 255, 0.30);
+}
+
+/* ---------- Subscriber rows ---------- */
+
+.echo-subscriber-row {
+    transition-duration: 80ms;
+    transition-timing-function: ease-out;
+}
+
+.echo-subscriber-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* ---------- Feed entries ---------- */
+
+.echo-feed-entry {
+    transition-duration: 80ms;
+    transition-timing-function: ease-out;
+}
+
+.echo-feed-entry:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.echo-feed-entry--flash {
+    background-color: rgba(100, 154, 255, 0.18);
+}
+
+/* ---------- Channel row flash (push-driven highlight on dispatch) ---------- */
+
+.echo-channel-row--flash {
+    background-color: rgba(100, 154, 255, 0.10);
+}
+
+/* ---------- Ping button (small action inline in subscriber rows) ---------- */
+
+.echo-inline-action {
+    transition-duration: 80ms, 80ms;
+    transition-timing-function: ease-out, ease-out;
+}
+
+.echo-inline-action:hover {
+    color: rgb(100, 154, 255);
+    background-color: rgba(100, 154, 255, 0.08);
+}

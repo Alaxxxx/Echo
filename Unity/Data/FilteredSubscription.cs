@@ -14,7 +14,7 @@ namespace OpalStudio.Echo.Unity.Data
 
             public void Dispose()
             {
-                  Events<T>.RemoveFilteredHandler(_id);
+                  EventChannel<T>.RemoveFilteredHandler(_id);
             }
       }
 }
